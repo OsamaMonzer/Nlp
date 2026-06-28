@@ -53,17 +53,17 @@ CLASS_NAMES = {"negative": "Negative", "neutral": "Neutral", "positive": "Positi
 
 # Team members shown on the Home page
 TEAM_MEMBERS = [
-    {"name": "Abobakr", "role": "Data Preprocessing & Feature Engineering", "id": "A24AI4007"},
-    {"name": "Ahmed",   "role": "Model Training & Evaluation", "id": "A24AI4011"},
-    {"name": "Osama",   "role": "Frontend & Visualization", "id": "A24AI0002"},
+    {"name": "Ahmed", "role": "Data Preprocessing & Feature Engineering", "id": "A24AI4007"},
+    {"name": "Osama",   "role": "Model Training & Evaluation", "id": "A24AI4011"},
+    {"name": "Abobakr",   "role": "Frontend & Visualization", "id": "A24AI0002"},
 ]
 
 # Model-comparison numbers. Person 2 trained Naive Bayes + SVM.
 # "Linear SVM" below = the saved model, measured on the full dataset (≈ training data,
 #   so it is optimistic). ⚠️ Replace BOTH rows with Person 2's proper TEST-SET scores.
 MODEL_COMPARISON = {
-    "Naive Bayes": {"Accuracy": 0.00, "F1": 0.00},   # TODO: fill from Person 2's evaluation
-    "Linear SVM":  {"Accuracy": 0.96, "F1": 0.96},   # saved model (replace with test-set result)
+    "Naive Bayes (MultinomialNB)": {"Accuracy": 0.718437, "F1": 0.653634},
+    "Linear SVM":                  {"Accuracy": 0.863727, "F1": 0.851370},
 }
 
 # How many rows to use when computing live metrics / confusion matrix.
