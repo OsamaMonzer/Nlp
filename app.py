@@ -18,6 +18,7 @@ Everything you need to change for your own project lives in the CONFIG block bel
 """
 
 import os
+from pydoc import text
 import re
 import pickle
 from collections import Counter
@@ -259,18 +260,40 @@ def _nlp_tools():
                 nltk.download(res, quiet=True)
             except Exception:
                 pass
-        return WordNetLemmatizer(), set(stopwords.words("english")), True
+        sw = set(stopwords.words("english")) - {'not', 'no', 'nor'}
+        return WordNetLemmatizer(), sw, True
     except Exception:
         from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
         return None, set(ENGLISH_STOP_WORDS), False
 
 
+NEGATION_TRIGGERS = {
+    'not', 'no', 'nor', 'never',
+    "don't", "doesn't", "didn't", "won't",
+    "can't", "isn't", "aren't", "wasn't",
+    "weren't", "couldn't", "shouldn't", "wouldn't"
+}
+
+def _negation_tagging(text):
+    tokens = text.split()
+    result = []
+    negate = False
+    for token in tokens:
+        clean = re.sub(r"[^\w']", '', token).lower()
+        if clean in NEGATION_TRIGGERS:
+            negate = True
+        elif negate:
+            result.append('NOT_' + token)
+            negate = False
+        else:
+            result.append(token)
+    return ' '.join(result)
+
 def preprocess(text):
-    """Replicates the team's 7-step cleaning pipeline (lowercase, remove URLs,
-    remove punctuation, remove numbers, tokenize, remove stopwords, lemmatize)
-    so analyzer input matches exactly how the model was trained."""
+    """Replicates the team's 8-step cleaning pipeline including negation tagging."""
     text = str(text).lower()
     text = re.sub(r"http\S+|www\S+|https\S+", "", text, flags=re.MULTILINE).strip()
+    text = _negation_tagging(text)                  # ← step 2b: BEFORE punctuation removal
     text = re.sub(r"[^\w\s]", "", text)
     text = re.sub(r"\d+", "", text).strip()
     lemmatizer, stop_words, ok = _nlp_tools()
@@ -349,8 +372,9 @@ def highlight_words(model, vectorizer, text, pred_label):
 
     max_score = max(contributions.values()) or 1.0
     chunks = []
-    for tok in text.split():
-        key = preprocess(tok)  # transform each display word the same way to match keys
+    cleaned_tokens = preprocess(text).split()   # preprocess the full text once
+    display_tokens = text.split()
+    for tok, key in zip(display_tokens, cleaned_tokens[:len(display_tokens)]):
         weight = contributions.get(key, 0)
         if weight > 0:
             intensity = 0.25 + 0.55 * (weight / max_score)
@@ -517,9 +541,9 @@ def page_analyzer(model, vectorizer):
                             "probabilities, so only the top prediction is shown.</div>",
                             unsafe_allow_html=True)
 
-        st.caption("Your text is automatically cleaned with the same 7-step pipeline used "
-                   "during training (lowercase, remove URLs/punctuation/numbers, stopwords, "
-                   "lemmatization) before it reaches the model.")
+        st.caption("Your text is automatically cleaned with the same 8-step pipeline used "
+           "during training (lowercase, remove URLs, negation tagging, remove "
+           "punctuation/numbers, stopwords, lemmatization) before it reaches the model.")
 
         st.markdown("### 🔦 Important words "
                     "<span class='badge'>coef-based</span>", unsafe_allow_html=True)
@@ -687,9 +711,9 @@ def page_model_info(model, vectorizer, df):
     with c1:
         st.markdown(
             "<div class='card'><h3>🧹 Preprocessing</h3>"
-            "<p class='small'>Raw text is cleaned before modeling: lowercasing, removing "
-            "punctuation and digits, stripping stopwords, and tokenizing. Optional "
-            "lemmatization/stemming reduces words to a base form so variants collapse together.</p></div>",
+            "<p class='small'>Raw text is cleaned in 8 steps: lowercasing, URL removal, "
+            "negation tagging (not good → NOT_good), punctuation and digit removal, "
+            "tokenization, stopword removal, and lemmatization.</p></div>",
             unsafe_allow_html=True)
     with c2:
         st.markdown(
