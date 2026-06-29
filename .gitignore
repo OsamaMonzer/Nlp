@@ -20,3 +20,8 @@ Thumbs.db
 
 # NLTK downloaded data (re-downloaded automatically on first run)
 nltk_data/
+
+# Large model/data files (tracked via Git LFS or kept locally)
+# Uncomment below if files exceed GitHub's 100MB limit:
+# models/*.pkl
+# data/*.csv

@@ -27,47 +27,66 @@ remove stopwords → lemmatize) so predictions match training conditions.
 
 ---
 
-## 🚀 Run it locally
+## 🚀 Setup & Run Locally
 
 ```bash
-# 1. install dependencies
-python -m pip install -r requirements.txt
+# 1. Clone the repo
+git clone https://github.com/OsamaMonzer/Nlp.git
+cd Nlp
 
-# 2. launch the app
-python -m streamlit run app.py
+# 2. (Optional) Create a virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Launch the app
+streamlit run app.py
 ```
 
-Then open `http://localhost:8501` in your browser.
-The first run downloads a little NLTK data, so keep your internet on for that launch.
+Then open `http://localhost:8501` in your browser.  
+The first run downloads NLTK data automatically — keep your internet on.
 
 ---
 
-## 📁 Project structure
+## 📁 Project Structure
 
 ```
 .
-├── app.py               # Streamlit dashboard (5 pages, 5 charts)
-├── requirements.txt     # Python dependencies
-├── spam_model.pkl       # trained Linear SVM model (saved with joblib)
-├── vectorizer.pkl       # fitted TF-IDF vectorizer
-├── cleaned_dataset.csv  # preprocessed dataset
-└── README.md
+├── app.py                        # Main Streamlit application (5 pages)
+├── requirements.txt              # Python dependencies
+├── README.md                     # Setup and usage instructions
+├── .gitignore                    # Ignore large/generated files
+│
+├── data/
+│   └── cleaned_dataset.csv       # Preprocessed Google Play reviews dataset
+│
+├── models/
+│   ├── spam_model.pkl            # Trained Linear SVM model (joblib)
+│   └── vectorizer.pkl            # Fitted TF-IDF vectorizer
+│
+├── notebooks/
+│   └── NLP_PROJECT.ipynb         # Model development & experimentation
+│
+└── .streamlit/
+    └── config.toml               # Streamlit theme configuration
 ```
 
-> Note: the model file is named `spam_model.pkl` for historical reasons, but the
-> task is **sentiment analysis**, not spam detection.
+> Note: `spam_model.pkl` is named for historical reasons — the actual task is **sentiment analysis**.
 
 ---
 
 ## 👥 Team
 
-| Member  | Role                                   |
-|---------|----------------------------------------|
-| Ahmed | Data Preprocessing & Feature Engineering |
-| Osama   | Model Training & Evaluation            |
-| Abobakr   | Streamlit App & Visualization        |
+| Member  | Role                                        |
+|---------|---------------------------------------------|
+| Ahmed   | Data Preprocessing & Feature Engineering   |
+| Osama   | Model Training & Evaluation                |
+| Abobakr | Streamlit App & Visualization              |
+
 ---
 
-## 🛠️ Tech stack
+## 🛠️ Tech Stack
 
 Python · scikit-learn · NLTK · pandas · NumPy · Plotly · WordCloud · Streamlit
